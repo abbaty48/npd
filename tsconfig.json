@@ -13,8 +13,16 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
+      "@/*": ["./*"],
+      "@src/*": ["src/*"],
+      "@ui/*": ["src/ui/*"],
+      "@app/*": ["src/app/*"],
+      "@pages/*": ["src/ui/pages/*"],
+      "@commons/*": ["src/ui/commons/*"],
+      "@components/*": ["src/ui/components/*"],
+      "@assets/*": ["src/ui/assets/*", "src/ui/assets/fonts/*"],
     }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src", "src/app", "extension.d.ts"]
 }
