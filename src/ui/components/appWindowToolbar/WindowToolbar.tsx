@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SplitButton } from 'primereact/splitbutton';
+// import { toggleThemeMode } from "@commons/rendererIPCs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 export default function WindowToolbar() {
@@ -34,17 +35,17 @@ export default function WindowToolbar() {
             {
               label: 'System Theme',
               icon: 'pi pi-desktop',
-              command: () => { },
+              command: () => Renderer.toggleTheme('system'),
             },
             {
               label: 'Light Theme',
               icon: 'pi pi-sun',
-              command: () => { },
+              command: () => Renderer.toggleTheme('light'),
             },
             {
               label: 'Dark Theme',
               icon: 'pi pi-moon',
-              command: () => { },
+              command: () => Renderer.toggleTheme('dark'),
             }
           ]} />
 
