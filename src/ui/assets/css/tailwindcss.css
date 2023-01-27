@@ -513,12 +513,33 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
-.relative {
-  position: relative;
+.mx-\[2\%\] {
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+.mt-\[4\%\] {
+  margin-top: 4%;
+}
+
+.mb-\[2\%\] {
+  margin-bottom: 2%;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
 }
 
 .flex {
   display: flex;
+}
+
+.h-full {
+  height: 100%;
 }
 
 .h-12 {
@@ -588,10 +609,6 @@ video {
   text-align: center;
 }
 
-.font-saira {
-  font-family: sairaregular;
-}
-
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -605,6 +622,16 @@ video {
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.outline-none {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .hover\:text-xs:hover {
