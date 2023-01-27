@@ -8,6 +8,8 @@ contextBridge.exposeInMainWorld('Renderer', {
   // toggleTheme
   toggleTheme: (themeType: string) =>
     ipcRenderer.invoke('themeMode', themeType),
-  // mininize
+  // minimize
+  minimizeApp: () => ipcRenderer.send('minimizeApp'),
   // close
+  closeApp: () => ipcRenderer.send('closeApp'),
 });

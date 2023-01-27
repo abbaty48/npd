@@ -1,23 +1,12 @@
 import { useState } from "react";
 import { SplitButton } from 'primereact/splitbutton';
-// import { toggleThemeMode } from "@commons/rendererIPCs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 export default function WindowToolbar() {
-  const [isTop, setIsTop] = useState(false);
 
   const _buttonClass =
     `text-gray-500 min-h-[16px] min-w-[16px] max-h-[50px] max-w-[50px] w-12 h-12 
       bg-transparent border-1 p-2 text-center appearance-none hover:animate-fadeOut hover:text-xs`;
-
-  const minimize = () => {
-    // ipcRenderer.send("minimize");
-  };
-
-  const close = () => {
-    // send a close command to the electron main process, to close the entire program
-    // ipcRenderer.send("close");
-  };
 
   return (
     <header id="app-maintitlebar">
@@ -52,13 +41,14 @@ export default function WindowToolbar() {
           {/* APP CONTROLS */}
           <div className={"flex flex-row justify-around text-xl"}>
             <button
+              type="button"
               title="minimize"
               className={_buttonClass}
-              onClick={minimize}
+              onClick={Renderer.minimizeApp}
             >
               <span className={"pi pi-window-minimize"}></span>
             </button>
-            <button title="close" className={_buttonClass} onClick={close}>
+            <button type="button" title="close" className={_buttonClass} onClick={Renderer.closeApp}>
               <span className={"pi pi-times"}></span>
             </button>
           </div>

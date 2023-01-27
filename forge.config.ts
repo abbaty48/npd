@@ -26,7 +26,6 @@ const config: ForgeConfig = {
         entryPoints: [
           {
             html: './src/ui/index.html',
-            // js: './src/ui/commons/rendererIPCs.ts',
             js: './src/ui/index.tsx',
             name: 'main_window',
             preload: {
