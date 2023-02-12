@@ -1,3 +1,4 @@
+import Main from '@pages/main';
 import { TabView, TabPanel } from 'primereact/tabview';
 
 export default function WindowContent() {
@@ -6,7 +7,7 @@ export default function WindowContent() {
     <div className={'mt-[4%] mb-[2%] mx-[2%] h-full'}>
       <TabView>
         <TabPanel header={'#'} leftIcon='pi pi-home mr-2'>
-          <h1>HOME</h1>
+          <Main />
         </TabPanel>
         <TabPanel header={'Downloads'} leftIcon='pi pi-download mr-2'>
           <h1>Download</h1>

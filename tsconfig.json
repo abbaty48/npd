@@ -20,6 +20,7 @@
       "@app/*": ["src/app/*"],
       "@pages/*": ["src/ui/pages/*"],
       "@commons/*": ["src/ui/commons/*"],
+      "@models/*": ["src/ui/commons/models/*"],
       "@components/*": ["src/ui/components/*"],
       "@assets/*": ["src/ui/assets/*", "src/ui/assets/fonts/*"],
     }

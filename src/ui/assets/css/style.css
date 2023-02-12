@@ -64,6 +64,11 @@ body {
 }
 
 @media(prefers-color-scheme: light) {
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--gray-200);
+  }
+
   body {
     color: #333 !important;
   }
@@ -7813,6 +7818,10 @@ body {
 }
 
 @media(prefers-color-scheme: dark) {
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--surface-800);
+  }
+
   body {
     color: #f1f1f1 !important;
   }
