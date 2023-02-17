@@ -1,4 +1,5 @@
 import Main from '@pages/main';
+import About from '@pages/about';
 import DownloadsHistory from '@pages/downloadsHistory';
 import { TabView, TabPanel } from 'primereact/tabview';
 
@@ -14,7 +15,7 @@ export default function WindowContent() {
           <DownloadsHistory />
         </TabPanel>
         <TabPanel header={'About'}>
-          <h1>About</h1>
+          <About />
         </TabPanel>
       </TabView>
     </div>
