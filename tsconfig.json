@@ -19,6 +19,7 @@
       "@ui/*": ["src/ui/*"],
       "@app/*": ["src/app/*"],
       "@pages/*": ["src/ui/pages/*"],
+      "@recoils/*": ["src/ui/recoils/*"],
       "@commons/*": ["src/ui/commons/*"],
       "@models/*": ["src/ui/commons/models/*"],
       "@components/*": ["src/ui/components/*"],

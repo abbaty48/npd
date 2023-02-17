@@ -2,16 +2,39 @@ import { Badge } from 'primereact/badge'
 import { Toast } from 'primereact/toast'
 import { Button } from 'primereact/button'
 import { Divider } from 'primereact/divider'
-import React, { useEffect, useRef, useState } from 'react'
+import { useRecoilStateLoadable } from 'recoil'
 import { SplitButton } from 'primereact/splitbutton'
 import { ProgressBar } from 'primereact/progressbar'
 import { BlockUI, BlockUIProps } from 'primereact/blockui'
+import React, { useEffect, useRef, useState } from 'react'
 import { IModuleVersion } from '@commons/models/interfaces/iModule'
 import { IDownloadPackage } from '@commons/models/interfaces/iDownloadPackage'
+import { PackageDownloadsSelector } from '../recoils/packageDownloaderSelector'
 
 interface IProps {
    moduleVersion: IModuleVersion,
    isOpen?: boolean
+}
+
+const initialDownloadPackage: IDownloadPackage = {
+   url: '',
+   downloadKey: '',
+   downloadType: 'PackageOnly',
+   newFileName: '',
+   originalFileName: '',
+   savedFilePath: '',
+   version: '',
+   status: {
+      failedReason: '',
+      isCompleted: false,
+      isDownloading: false,
+      isFailed: false,
+      isPaused: false,
+      isStarted: false,
+      progress: 0,
+      progressStatus: ''
+   },
+   dateTime: new Date().toISOString()
 }
 export const ModuleVersion = (props: IProps) => {
    // 
@@ -20,12 +43,14 @@ export const ModuleVersion = (props: IProps) => {
    const toastRef = useRef<Toast>(null)
    const [isBlocked, setIsBlocked] = useState(false)
    const [isOpen, setIsOpen] = useState(open ?? false)
-   const [dlPackage, setDlPackage] = useState<IDownloadPackage>()
+   const [dlPackage, setDlPackage] = useState<IDownloadPackage>(initialDownloadPackage)
+   const [_, setPackageDownloadStore] = useRecoilStateLoadable(PackageDownloadsSelector)
+
    useEffect(() => {
       const downloadKey = Math.floor(Math.random() * Date.now()).toString(16)
       setDlPackage(prevStatus => ({
          ...prevStatus,
-         downloadKey
+         downloadKey,
       }))
    }, [setDlPackage])
 
@@ -38,36 +63,30 @@ export const ModuleVersion = (props: IProps) => {
    }
    /** */
    const onDownload = async (actionType: 'PackageOnly' | 'WithAllDependency') => {
-
       // choose where to save the file
-      const resolve = await Renderer.saveFile(v.dist.tarball);
+      const resolve = await Renderer.saveFile(v.dist.tarball, actionType);
       // if user cancelled the dialog, a null will be return and abort the download
       if (resolve === null) return;
       //
       const { newFileName, oldFileName, filePath } = resolve
-      // generate a download unique key
-      /* LISTENS */
       // Start Download
       await new Promise(resolve => {
+         /* LISTENS */
          Renderer.download(
             dlPackage.downloadKey,
             v.dist.tarball, oldFileName, newFileName, filePath, actionType, v.dependencies, v.devDependencies
          );
-         // STORE download info: tarball,oldFile,newFileName, filePath, actionType, downloadKey to localForage
          // Download Status
          Renderer.downloadOnStatus((key, isDownloading, isCompleted, isStarted, isPaused, isFailed, failedReason, progressStatus) => {
             if (key !== dlPackage.downloadKey) return
             // 
             setIsBlocked(true)
-            if (isStarted || isDownloading) {
-               setDlPackage(prevStates => ({
+            //
+            setDlPackage(prevStates => {
+               const dl = {
                   ...prevStates,
-                  newFileName,
-                  url: v.dist.tarball,
-                  downloadType: actionType,
-                  savedFilePath: newFileName,
-                  originalFileName: oldFileName,
                   status: {
+                     ...prevStates.status,
                      isDownloading,
                      isCompleted,
                      isStarted,
@@ -75,11 +94,46 @@ export const ModuleVersion = (props: IProps) => {
                      isPaused,
                      failedReason,
                      progressStatus,
-                     progress: prevStates.status.progress,
                   }
-               }))
-            }
-            // STORE status info: isDownloading, isCompleted, isStarted, isPaused, isFailed, failedReason to localForage
+               } // end dl
+               return dl
+            }) // end setDlPackage
+            setPackageDownloadStore(currentDls => {
+               const _currentDL = currentDls.find(dl => dl.downloadKey === key);
+               if (!_currentDL) {
+                  return [{
+                     url: v.dist.tarball,
+                     version: v.version,
+                     newFileName,
+                     downloadType: actionType,
+                     savedFilePath: filePath,
+                     originalFileName: oldFileName,
+                     dateTime: new Date().toISOString(),
+                     downloadKey: dlPackage.downloadKey,
+                     status: initialDownloadPackage.status
+                  }, ...currentDls]
+               } else {
+                  return currentDls.map(dls => {
+                     if (dls.downloadKey === key) {
+                        return {
+                           ...dls, status: {
+                              ...dls.status,
+                              failedReason,
+                              isCompleted,
+                              isDownloading,
+                              isFailed,
+                              isPaused,
+                              isStarted,
+                              progressStatus
+                           } // end status
+                        } // end return
+                     } else {
+                        return dls
+                     } // end else
+                  }) // end map
+               } // end else
+            }) // end setPackageDownloadStore
+            // } // end isStarted || isDownloading
          })
          // Download Failed
          Renderer.downloadOnFailed((key, reason) => {
@@ -91,7 +145,23 @@ export const ModuleVersion = (props: IProps) => {
                   isFailed: true,
                   failedReason: reason
                }
-            }))
+            })) // end setDlPackage
+            setPackageDownloadStore(_currentDLs => {
+               return _currentDLs.map(_dl => {
+                  if (_dl.downloadKey === key) {
+                     return {
+                        ..._dl,
+                        status: {
+                           ..._dl.status,
+                           isFailed: true,
+                           failedReason: reason
+                        }
+                     }
+                  } else {
+                     return _dl
+                  } // end else
+               }) // end map
+            }) // end setPackageDownloadStore
             toastRef.current?.show({
                life: 5000,
                severity: 'error',
@@ -102,6 +172,7 @@ export const ModuleVersion = (props: IProps) => {
          // Download Completed
          Renderer.downloadOnCompleted((key) => {
             if (key !== dlPackage.downloadKey) return
+
             setTimeout(() => {
                setIsBlocked(false)
             }, 5000); // 1minute
@@ -124,12 +195,23 @@ export const ModuleVersion = (props: IProps) => {
                   progress: percentage
                }
             }))
-            // setDlStatus(prevStatus => ({
-            //    ...prevStatus,
-            //    progress: percentage
-            // }))
-         })
-
+            //
+            setPackageDownloadStore(_currentDLs => {
+               return _currentDLs.map(_dl => {
+                  if (_dl.downloadKey === key) {
+                     return {
+                        ..._dl,
+                        status: {
+                           ..._dl.status,
+                           progress: percentage
+                        }
+                     }
+                  } else {
+                     return _dl
+                  } // end else
+               }) // end map
+            }) // end setPackageDownloadStore
+         }) // end downloadOnProgress
          resolve(undefined)
       }) // end promise
    }
@@ -161,7 +243,7 @@ export const ModuleVersion = (props: IProps) => {
                   dlPackage.status.isCompleted ? (
                      <p className='my-3 text-center' >Download Completed</p>
                   ) : (
-                     <div className='flex flex-col justify-center space-y-4 w-4/6'>
+                     <div className='flex flex-col justify-center space-y-4 w-96'>
                         <>
                            <div className='flex flex-row items-center'>
                               <ProgressBar mode={
@@ -303,4 +385,3 @@ export const ModuleVersion = (props: IProps) => {
       </BlockUI>
    )
 }
-

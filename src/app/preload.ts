@@ -12,8 +12,10 @@ contextBridge.exposeInMainWorld('Renderer', {
   // close
   closeApp: () => ipcRenderer.send('closeApp'),
   // saveFile
-  saveFile: (fileTarBall: string) =>
-    ipcRenderer.invoke('dialog:saveFile', { fileTarBall }),
+  saveFile: (
+    fileTarBall: string,
+    forType: 'PackageOnly' | 'WithAllDependency'
+  ) => ipcRenderer.invoke('dialog:saveFile', { fileTarBall, forType }),
   // download
   download: (
     downloadKey: string,
@@ -103,5 +105,10 @@ contextBridge.exposeInMainWorld('Renderer', {
   downloadOnStop: (key: string, callBack?: () => void) => {
     ipcRenderer.send('download:OnStop', key);
     callBack?.call(this);
+  },
+  downloadOnStarted: (callBack: (key: string) => void) => {
+    ipcRenderer.on('download:OnStarted', (e, key) => {
+      callBack(key);
+    });
   },
 });

@@ -47,7 +47,6 @@ const Main = () => {
    const searchInputRef = useRef<HTMLInputElement>()
    const [states, setStates] = useState(initStates)
    const [filters, setFilters] = useState(initFilters)
-   const toastRef = useRef<Toast>(null)
 
    useEffect(() => {
       onSearch(states.searchTerm)
@@ -163,7 +162,6 @@ const Main = () => {
 
    return (
       <div className='h-full w-full'>
-
          {/* SEARCH  */}
          <div className='self-end place-self-end my-1 mx-1'>
             <div className='relative'>

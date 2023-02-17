@@ -5,6 +5,8 @@ export interface IDownloadPackage {
   savedFilePath: string;
   originalFileName: string;
   downloadType: 'PackageOnly' | 'WithAllDependency';
+  version: string;
+  dateTime: string;
   status: {
     isDownloading: boolean;
     isCompleted: boolean;

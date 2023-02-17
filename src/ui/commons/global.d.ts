@@ -7,7 +7,8 @@ export interface Renderer {
   toggleTheme: (themeType: string) => Promise<boolean>;
   //
   saveFile: (
-    fileTarBall: string
+    fileTarBall: string,
+    forType: 'PackageOnly' | 'WithAllDependency' = 'PackageOnly'
   ) => { filePath: string; oldFileName: string; newFileName: string } | null;
   //
   download: (
@@ -47,6 +48,8 @@ export interface Renderer {
   ) => void;
   //
   downloadOnStop: (key: string, callBack?: () => void) => void;
+  //
+  downloadOnStarted: (callBack?: (key: string) => void) => void;
 }
 
 declare global {

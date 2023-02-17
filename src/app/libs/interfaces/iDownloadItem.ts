@@ -32,7 +32,9 @@ export interface IDownloadItem {
     /** fire when the download is completed */
     onCompleted: () => void,
     /** fire when the download failed */
-    onFailed: (reason: string) => void
+    onFailed: (reason: string) => void,
+    /** fired when the download started */
+    onStarted: () => void
   ) => void;
   /* */
   downloadWithAllDependency: (
@@ -47,6 +49,8 @@ export interface IDownloadItem {
     /** fire when the download is completed */
     onCompleted: () => void,
     /** fire when the download failed */
-    onFailed: (reason: string) => void
+    onFailed: (reason: string) => void,
+    /** fired when the download started */
+    onStarted: () => void
   ) => void;
 }

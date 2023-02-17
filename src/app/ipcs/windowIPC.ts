@@ -19,16 +19,20 @@ ipcMain.on('closeApp', (event) => {
   saveFileDialog.
   Open a save file dialog to allow user to choose a path where to save a downloaed file.
 */
-ipcMain.handle('dialog:saveFile', async (event, { fileTarBall }) => {
+ipcMain.handle('dialog:saveFile', async (event, { fileTarBall, forType }) => {
   try {
     const choose = await dialog.showSaveDialog(
       BrowserWindow.fromWebContents(event.sender),
       {
-        filters: [
-          { name: 'tgz', extensions: ['tgz'] },
-          { name: 'tar', extensions: ['tar'] },
-          { name: 'tar.gz', extensions: ['tar.gz'] },
-        ],
+        // 'PackageOnly' | 'WithAllDependency'
+        filters:
+          forType === 'PackageOnly'
+            ? [{ name: 'tgz', extensions: ['tgz'] }]
+            : [
+                { name: 'tgz', extensions: ['tgz'] },
+                { name: 'tar', extensions: ['tar'] },
+                { name: 'tar.gz', extensions: ['tar.gz'] },
+              ],
         properties: ['createDirectory', 'showOverwriteConfirmation'],
       }
     );
@@ -86,6 +90,7 @@ ipcMain.on(
             isPaused,
             isFailed,
             failedReason,
+            progressStatus,
           }) => {
             BrowserWindow.fromWebContents(event.sender).webContents.send(
               'download:OnStatus',
@@ -97,6 +102,7 @@ ipcMain.on(
                 isPaused,
                 isFailed,
                 failedReason,
+                progressStatus,
               }
             );
           },
@@ -122,6 +128,13 @@ ipcMain.on(
             BrowserWindow.fromWebContents(event.sender).webContents.send(
               'download:OnFailed',
               { key: downloadKey, reason }
+            );
+          },
+          // Started
+          () => {
+            BrowserWindow.fromWebContents(event.sender).webContents.send(
+              'download:OnStarted',
+              downloadKey
             );
           }
         );
@@ -176,14 +189,21 @@ ipcMain.on(
               'download:OnFailed',
               { key: downloadKey, reason }
             );
+          },
+          // Started
+          () => {
+            BrowserWindow.fromWebContents(event.sender).webContents.send(
+              'download:OnStarted',
+              downloadKey
+            );
           }
         );
       }
     } catch (error) {
       console.log('ERROR IN WINDOWIPC, REASON: ', error);
-    }
-  }
-);
+    } // end catch
+  } // end
+); // end on download
 
 ipcMain.on('download:OnPauseResume', (e, key, isPaused) => {
   // find a downloader with the matching key
@@ -191,11 +211,11 @@ ipcMain.on('download:OnPauseResume', (e, key, isPaused) => {
   if (dl) {
     dl.downloader.pauseResume(isPaused);
   }
-});
+}); // end onPauseResume
 ipcMain.on('download:OnStop', (e, key) => {
   // find a downloader with the matching key
   const dl = downloads.find((d) => d.key === key);
   if (dl) {
     dl.downloader.stop();
   }
-});
+}); // end onStop
