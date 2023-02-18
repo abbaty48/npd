@@ -2,14 +2,14 @@ import { Badge } from 'primereact/badge'
 import { Toast } from 'primereact/toast'
 import { Button } from 'primereact/button'
 import { Divider } from 'primereact/divider'
-import { useRecoilStateLoadable } from 'recoil'
+import { useRecoilStateLoadable, useSetRecoilState } from 'recoil'
 import { SplitButton } from 'primereact/splitbutton'
 import { ProgressBar } from 'primereact/progressbar'
 import { BlockUI, BlockUIProps } from 'primereact/blockui'
 import React, { useEffect, useRef, useState } from 'react'
 import { IModuleVersion } from '@commons/models/interfaces/iModule'
+import { PackageDownloadsSelector } from '@recoils/packageDownloaderSelector'
 import { IDownloadPackage } from '@commons/models/interfaces/iDownloadPackage'
-import { PackageDownloadsSelector } from '../recoils/packageDownloaderSelector'
 
 interface IProps {
    moduleVersion: IModuleVersion,
@@ -44,7 +44,8 @@ export const ModuleVersion = (props: IProps) => {
    const [isBlocked, setIsBlocked] = useState(false)
    const [isOpen, setIsOpen] = useState(open ?? false)
    const [dlPackage, setDlPackage] = useState<IDownloadPackage>(initialDownloadPackage)
-   const [_, setPackageDownloadStore] = useRecoilStateLoadable(PackageDownloadsSelector)
+   // const [_, setPackageDownloadStore] = useRecoilStateLoadable(PackageDownloadsSelector)
+   const setPackageDownloadStore = useSetRecoilState(PackageDownloadsSelector)
 
    useEffect(() => {
       const downloadKey = Math.floor(Math.random() * Date.now()).toString(16)

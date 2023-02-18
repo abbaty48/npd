@@ -10,12 +10,10 @@ export const PackageDownloadsSelector = selector({
       return get<IDownloadPackage[]>(await PackageDownloadAtom);
     } catch (error) {}
   },
-  set({ get, set }, newValue: IDownloadPackage[]) {
+  set: ({ set }, newValue: IDownloadPackage[]) => {
     try {
-      localforage.setItem('PackageDownloads', newValue, (err, value) => {
-        if (err) return;
-        set(PackageDownloadAtom, value);
-      });
+      localforage.setItem('PackageDownloads', newValue);
+      set(PackageDownloadAtom, newValue);
     } catch (error) {}
   },
 });
